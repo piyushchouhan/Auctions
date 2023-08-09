@@ -1,0 +1,99 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+
+<ul>
+    <h3>{{listing.title}}</h3>
+    <li>{{ listing.description }}</li>
+    <li>Created at: {{ listing.start_time }}</li>
+    <li>Last at: {{ listing.end_time }}</li>
+    <li>Price: ${{ listing.starting_bid }}</li>
+    <li>Seller: {{ listing.seller.username }}</li>
+    <li>Category: {{ listing.category }}</li>
+    <img src="/media/{{ listing.image }}" alt="Listing Image" height="300" width="250">
+</ul>
+
+<h3>Comments</h3>
+<ul>
+    {% for comment in comments %}
+        <li class="comment">
+            <div class="d-flex justify-content-between">
+                <div class="comment-text">{{ comment.text }} - {{ comment.commenter.username }}
+                    {% if request.user.is_authenticated and request.user == comment.commenter %}
+                        <a href="{% url 'delete_comment' listing.id comment.id %}" class="btn btn-danger btn-sm ml-2">Delete</a>
+                        <a href="{% url 'edit_comment' listing.id comment.id %}" class="btn btn-primary btn-sm ml-2">Edit</a>
+                    {% endif %}
+                </div>
+            </div>
+        </li>
+    {% endfor %}
+</ul>
+
+
+<!-- Comment form -->
+<h3>Add a Comment</h3>
+<form method="post">
+    {% csrf_token %}
+    {{ comment_form.as_p }}
+    <button type="submit">Submit Comment</button>
+</form>
+{% if messages %}
+    <div class="messages">
+        {% for message in messages %}
+            <div class="message">{{ message }}</div>
+        {% endfor %}
+    </div>
+{% endif %}
+
+{% if request.user.is_authenticated %}
+    <button id="add-to-watchlist-btn" data-listing-id="{{ listing.id }}">Add to Watchlist</button>
+{% endif %}
+
+
+<script>
+   $(document).ready(function () {
+    $("#add-to-watchlist-btn").click(function () {
+        const listingId = $(this).data("listing-id");
+        
+        // Assuming `username` is a variable containing the currently logged-in user's username
+        const username = "{{ request.user.username }}";
+        
+        // Call the new endpoint to check if the item is in the watchlist
+        $.ajax({
+            type: "GET",
+            url: "{% url 'check_watchlist' %}",
+            data: {
+                listing_id: listingId,
+                username: username
+            },
+            success: function (data) {
+                if (!data.is_item_in_watchlist) {
+                    // Item is not in the watchlist, proceed with adding it
+                    $.ajax({
+                        type: "POST",
+                        url: "{% url 'add_to_watchlist' listing.id %}",
+                        headers: {
+                            "X-CSRFToken": "{{ csrf_token }}"
+                        },
+                        success: function (data) {
+                            alert(data.message);
+                        },
+                        error: function () {
+                            alert("An error occurred.");
+                        }
+                    });
+                } else {
+                    alert("Item is already in the watchlist.");
+                }
+            },
+            error: function () {
+                alert("An error occurred while checking the watchlist.");
+            }
+        });
+    });
+});
+
+</script>
+
+{% endblock %}
+

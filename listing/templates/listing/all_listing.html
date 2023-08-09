@@ -1,0 +1,29 @@
+{% extends "auctions/layout.html" %}
+{% load static %}
+
+
+{% block body %}
+<link href="{% static 'auctions/all_listing.css' %}" rel="stylesheet">
+<h2>All Listings</h2>
+<ul>
+    {% for listing in listings %}
+    </br>
+    <div class="listing-container">
+        <a href="{% url 'listing_detail' listing.id %}">{{listing.title}}</a>
+        <div class="details">
+            <ul>
+                <ul>{{ listing.description }}</ul>
+                <ul>Created at: {{ listing.start_time }}</ul>
+                <ul>Listing Price: ${{ listing.starting_bid }}</ul>
+                </br>
+                {% if request.user.is_authenticated and request.user == listing.seller %}
+               <ul><a href="{% url 'delete_listing' listing.id %}" class="btn btn-danger btn-sm ml-2">Delete</a></ul>
+            {% endif %}
+            </ul>
+           
+        </div>
+        <img src="/media/{{ listing.image }}" alt="Listing Image" height="300" width="250">
+    </div>
+    {% endfor %}
+</ul>
+{% endblock %}

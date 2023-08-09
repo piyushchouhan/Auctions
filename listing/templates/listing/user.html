@@ -1,0 +1,9 @@
+{% extends "auctions/layout.html"  %}
+
+{% block body %}
+    {% if user.first_name and user.last_name %}
+        <h2>Name: {{ user.first_name }} {{ user.last_name }}</h2>
+    {% endif %}
+    <h4>Email: {{ user.email }}</h4>
+    <h4>Username: {{ user.username }}</h4>
+{% endblock %}

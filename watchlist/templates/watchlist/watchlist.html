@@ -1,0 +1,24 @@
+{% extends "auctions/layout.html"  %}
+
+{% block body %}
+<h2>My Watchlist</h2>
+
+    {% for listing in user_watchlist.listings.all %}
+            <ul>
+                <h3><a href="{% url 'listing_detail' listing.id %}">{{listing.title}}</a></h3>
+                <li>{{ listing.description }}</li>
+                <li>Created at: {{ listing.start_time }}</li>
+                <li>Last at: {{ listing.end_time }}</li>
+                <li>Price: ${{ listing.starting_bid }}</li>
+                <li>Seller: {{ listing.seller.username }}</li>
+                <li>Category: {{ listing.category }}</li>
+                <img src="/media/{{ listing.image }}" alt="Listing Image" height="300" width="250">
+            </ul>
+
+            <a href="{% url 'remove_from_watchlist' listing.id %}" class="btn btn-danger btn-sm ml-2">Remove</a>
+
+    {% endfor %}
+
+
+{% endblock %}
+

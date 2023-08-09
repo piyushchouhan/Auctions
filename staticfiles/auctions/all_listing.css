@@ -1,0 +1,13 @@
+/* all_listing.css */
+
+.listing-container {
+    display: flex;
+    align-items: flex-start;
+    gap: 0px; /* Adjust the gap between image and details */
+    margin-bottom: 20px; /* Add spacing between listings */
+}
+
+.details {
+    flex: 1; /* Allow details to take available space */
+}
+
